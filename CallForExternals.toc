@@ -1,0 +1,7 @@
+## Interface: 120001
+## Category: Combat
+## Title: Call For Externals
+## IconTexture: Interface\Icons\spell_nature_lightning
+## Notes: Shows a large message when someone calls for external buffs
+## SavedVariables: KeywordTriggersDB
+CallForExternals.lua
