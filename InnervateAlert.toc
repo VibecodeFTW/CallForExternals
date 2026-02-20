@@ -1,0 +1,6 @@
+## Interface: 120001
+## Category: 50 DKP Minus
+## Title: Innervate Alert
+## IconTexture: Interface\Icons\spell_nature_lightning
+## Notes: Shows a large message when someone whispers "Innervate"
+InnervateAlert.lua
