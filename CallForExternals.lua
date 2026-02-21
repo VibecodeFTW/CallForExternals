@@ -4,7 +4,7 @@ local function LoadSavedTriggers()
         KeywordTriggersDB = {}
     end
 
--- If DB is empty, load your static defaults
+    -- If DB is empty, load your static defaults
     if next(KeywordTriggersDB) == nil then
         KeywordTriggersDB["innervate"] = "Innervate"
         KeywordTriggersDB["power infusion"] = "Power Infusion"
@@ -27,31 +27,75 @@ loader:SetScript("OnEvent", function(self, event, addon)
     end
 end)
 
+local CFE_LargeMessageFrame = CFE_LargeMessageFrame or nil
+local CFE_LargeMessageTimer = nil
+
+function ShowLargeMessage(msg)
+    if not CFE_LargeMessageFrame then
+        CFE_LargeMessageFrame = CreateFrame("Frame", "CFE_LargeMessageFrame", UIParent, "BackdropTemplate")
+        CFE_LargeMessageFrame:SetSize(600, 50)
+        CFE_LargeMessageFrame:SetBackdrop({
+            bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
+            edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
+            tile = true, tileSize = 32, edgeSize = 32,
+            insets = { left = 11, right = 12, top = 12, bottom = 11 }
+        })
+
+        CFE_LargeMessageFrame:SetMovable(true)
+        CFE_LargeMessageFrame:EnableMouse(true)
+        CFE_LargeMessageFrame:RegisterForDrag("LeftButton")
+        CFE_LargeMessageFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
+        CFE_LargeMessageFrame:SetScript("OnDragStop", function(self)
+            self:StopMovingOrSizing()
+            local point, _, relativePoint, xOfs, yOfs = self:GetPoint()
+            CFE_SavedPosition = { point, relativePoint, xOfs, yOfs }
+        end)
+
+        if CFE_SavedPosition then
+            CFE_LargeMessageFrame:ClearAllPoints()
+            CFE_LargeMessageFrame:SetPoint(
+                CFE_SavedPosition[1],
+                UIParent,
+                CFE_SavedPosition[2],
+                CFE_SavedPosition[3],
+                CFE_SavedPosition[4]
+            )
+        else
+            CFE_LargeMessageFrame:SetPoint("CENTER")
+        end
+
+        CFE_LargeMessageFrame.text = CFE_LargeMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+        CFE_LargeMessageFrame.text:SetPoint("CENTER")
+        CFE_LargeMessageFrame.text:SetJustifyH("CENTER")
+        CFE_LargeMessageFrame.text:SetJustifyV("MIDDLE")
+    end
+
+    CFE_LargeMessageFrame.text:SetText(msg)
+    CFE_LargeMessageFrame:Show()
+    CFE_LargeMessageFrame:SetAlpha(1)
+
+    -- Cancel any previous timer
+    if CFE_LargeMessageTimer then
+        CFE_LargeMessageTimer:Cancel()
+    end
+
+    -- Start a new 3-second timer
+    CFE_LargeMessageTimer = C_Timer.NewTimer(3, function()
+        if CFE_LargeMessageFrame:IsShown() then
+            CFE_LargeMessageFrame:Hide()
+        end
+    end)
+end
+
+
 -- Create a frame to listen for events
 local frame = CreateFrame("Frame")
 
--- Function to display a message in the middle of the screen
-local function ShowLargeMessage(msg)
-    local f = CreateFrame("Frame", nil, UIParent)
-    f:SetSize(500, 100)
-    f:SetPoint("CENTER")
-    local text = f:CreateFontString(nil, "OVERLAY", "GameFontNormalLarge")
-    text:SetPoint("CENTER")
-
-    -- Set font size to 40
-    local font, _, flags = text:GetFont()
-    text:SetFont(font, 40, flags)
-    text:SetText(msg)
-
-    -- Fade out after 3 seconds
-    C_Timer.After(3, function() f:Hide() end)
-end
 
 
 -- Event handler for chat messages
 frame:SetScript("OnEvent", function(self, event, msg, sender)
     local lowerMsg = msg:lower()
-
     for keyword, spellName in pairs(KeywordTriggersDB) do
         local pattern = "%f[%a]" .. keyword:lower() .. "%f[%A]"
         if lowerMsg:match(pattern) then
@@ -60,6 +104,7 @@ frame:SetScript("OnEvent", function(self, event, msg, sender)
         end
     end
 end)
+
 
 -- Register chat events
 frame:RegisterEvent("CHAT_MSG_WHISPER")
