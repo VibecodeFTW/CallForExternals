@@ -53,7 +53,8 @@ frame:SetScript("OnEvent", function(self, event, msg, sender)
     local lowerMsg = msg:lower()
 
     for keyword, spellName in pairs(KeywordTriggersDB) do
-        if lowerMsg:find(keyword) then
+        local pattern = "%f[%a]" .. keyword:lower() .. "%f[%A]"
+        if lowerMsg:match(pattern) then
             ShowLargeMessage(spellName .. " from " .. sender .. "!")
             break
         end
