@@ -21,9 +21,17 @@ end
 local loader = CreateFrame("Frame")
 loader:RegisterEvent("ADDON_LOADED")
 
+-- Store player class
+local playerClass = nil
+
 loader:SetScript("OnEvent", function(self, event, addon)
     if addon == "CallForExternals" then
         LoadSavedTriggers()
+        
+        -- Detect player class at addon load
+        local className, classID = UnitClass("player")
+        playerClass = className
+        print("|cff00ff00CallForExternals|r: Detected player class - " .. className)
     end
 end)
 
@@ -107,13 +115,14 @@ end)
 
 
 -- Register chat events
+-- Note: Only whisper events are registered to avoid spamming in public channels. You can uncomment others if desired.
 frame:RegisterEvent("CHAT_MSG_WHISPER")
-frame:RegisterEvent("CHAT_MSG_PARTY")
-frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
-frame:RegisterEvent("CHAT_MSG_RAID")
-frame:RegisterEvent("CHAT_MSG_RAID_LEADER")
-frame:RegisterEvent("CHAT_MSG_INSTANCE_CHAT")
-frame:RegisterEvent("CHAT_MSG_INSTANCE_CHAT_LEADER")
+--frame:RegisterEvent("CHAT_MSG_PARTY")
+--frame:RegisterEvent("CHAT_MSG_PARTY_LEADER")
+--frame:RegisterEvent("CHAT_MSG_RAID")
+--frame:RegisterEvent("CHAT_MSG_RAID_LEADER")
+--frame:RegisterEvent("CHAT_MSG_INSTANCE_CHAT")
+--frame:RegisterEvent("CHAT_MSG_INSTANCE_CHAT_LEADER")
 
 SLASH_TRIGGERS1 = "/triggers"
 
