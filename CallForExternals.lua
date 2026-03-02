@@ -35,62 +35,62 @@ loader:SetScript("OnEvent", function(self, event, addon)
     end
 end)
 
-local CFE_LargeMessageFrame = CFE_LargeMessageFrame or nil
-local CFE_LargeMessageTimer = nil
+local LargeMessageFrame = LargeMessageFrame or nil
+local LargeMessageTimer = nil
 
 function ShowLargeMessage(msg)
-    if not CFE_LargeMessageFrame then
-        CFE_LargeMessageFrame = CreateFrame("Frame", "CFE_LargeMessageFrame", UIParent, "BackdropTemplate")
-        CFE_LargeMessageFrame:SetSize(600, 50)
-        CFE_LargeMessageFrame:SetBackdrop({
+    if not LargeMessageFrame then
+        LargeMessageFrame = CreateFrame("Frame", "LargeMessageFrame", UIParent, "BackdropTemplate")
+        LargeMessageFrame:SetSize(600, 50)
+        LargeMessageFrame:SetBackdrop({
             bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background",
             edgeFile = "Interface\\DialogFrame\\UI-DialogBox-Border",
             tile = true, tileSize = 32, edgeSize = 32,
             insets = { left = 11, right = 12, top = 12, bottom = 11 }
         })
 
-        CFE_LargeMessageFrame:SetMovable(true)
-        CFE_LargeMessageFrame:EnableMouse(true)
-        CFE_LargeMessageFrame:RegisterForDrag("LeftButton")
-        CFE_LargeMessageFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
-        CFE_LargeMessageFrame:SetScript("OnDragStop", function(self)
+        LargeMessageFrame:SetMovable(true)
+        LargeMessageFrame:EnableMouse(true)
+        LargeMessageFrame:RegisterForDrag("LeftButton")
+        LargeMessageFrame:SetScript("OnDragStart", function(self) self:StartMoving() end)
+        LargeMessageFrame:SetScript("OnDragStop", function(self)
             self:StopMovingOrSizing()
             local point, _, relativePoint, xOfs, yOfs = self:GetPoint()
-            CFE_SavedPosition = { point, relativePoint, xOfs, yOfs }
+            SavedPosition = { point, relativePoint, xOfs, yOfs }
         end)
 
-        if CFE_SavedPosition then
-            CFE_LargeMessageFrame:ClearAllPoints()
-            CFE_LargeMessageFrame:SetPoint(
-                CFE_SavedPosition[1],
+        if SavedPosition then
+            LargeMessageFrame:ClearAllPoints()
+            LargeMessageFrame:SetPoint(
+                SavedPosition[1],
                 UIParent,
-                CFE_SavedPosition[2],
-                CFE_SavedPosition[3],
-                CFE_SavedPosition[4]
+                SavedPosition[2],
+                SavedPosition[3],
+                SavedPosition[4]
             )
         else
-            CFE_LargeMessageFrame:SetPoint("CENTER")
+            LargeMessageFrame:SetPoint("CENTER")
         end
 
-        CFE_LargeMessageFrame.text = CFE_LargeMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
-        CFE_LargeMessageFrame.text:SetPoint("CENTER")
-        CFE_LargeMessageFrame.text:SetJustifyH("CENTER")
-        CFE_LargeMessageFrame.text:SetJustifyV("MIDDLE")
+        LargeMessageFrame.text = LargeMessageFrame:CreateFontString(nil, "OVERLAY", "GameFontHighlightLarge")
+        LargeMessageFrame.text:SetPoint("CENTER")
+        LargeMessageFrame.text:SetJustifyH("CENTER")
+        LargeMessageFrame.text:SetJustifyV("MIDDLE")
     end
 
-    CFE_LargeMessageFrame.text:SetText(msg)
-    CFE_LargeMessageFrame:Show()
-    CFE_LargeMessageFrame:SetAlpha(1)
+    LargeMessageFrame.text:SetText(msg)
+    LargeMessageFrame:Show()
+    LargeMessageFrame:SetAlpha(1)
 
     -- Cancel any previous timer
-    if CFE_LargeMessageTimer then
-        CFE_LargeMessageTimer:Cancel()
+    if LargeMessageTimer then
+        LargeMessageTimer:Cancel()
     end
 
     -- Start a new 3-second timer
-    CFE_LargeMessageTimer = C_Timer.NewTimer(3, function()
-        if CFE_LargeMessageFrame:IsShown() then
-            CFE_LargeMessageFrame:Hide()
+    LargeMessageTimer = C_Timer.NewTimer(3, function()
+        if LargeMessageFrame:IsShown() then
+            LargeMessageFrame:Hide()
         end
     end)
 end
